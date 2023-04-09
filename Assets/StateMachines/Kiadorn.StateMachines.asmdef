@@ -1,0 +1,16 @@
+{
+    "name": "StateMachines",
+    "rootNamespace": "Kiadorn.StateMachines",
+    "references": [
+        "GUID:2206c3717432421419f4d02e7649104c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
