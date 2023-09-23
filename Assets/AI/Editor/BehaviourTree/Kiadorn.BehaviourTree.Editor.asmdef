@@ -1,0 +1,16 @@
+{
+    "name": "Kiadorn.BehaviourTree.Editor",
+    "rootNamespace": "Kiadorn.BehaviourTree.Editor",
+    "references": [
+        "GUID:eebb001fed5452941818dde623be2d30"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

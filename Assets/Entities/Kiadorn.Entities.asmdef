@@ -1,0 +1,17 @@
+{
+    "name": "Kiadorn.Entities",
+    "rootNamespace": "",
+    "references": [
+        "GUID:949c6377bfc31ba49a5ab84587605dde",
+        "GUID:ea89c5157ab35f7439cdb2584433ae57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
