@@ -1,4 +1,5 @@
 using UnityEngine;
+using Kiadorn;
 
 namespace Kiadorn.Entities.Locomotion
 {
@@ -25,7 +26,7 @@ namespace Kiadorn.Entities.Locomotion
 
         protected float currentSpeed;
 
-        protected bool inControl;
+        protected bool inControl = true;
 
         protected virtual void FixedUpdate()
         {
@@ -34,6 +35,11 @@ namespace Kiadorn.Entities.Locomotion
 
         public virtual void ProcessDirectionVector(Vector2 movementVector)
         {
+            if (!inControl)
+            {
+                return;
+            }
+
             characterInputVector = new Vector3(movementVector.x, 0, movementVector.y);
 
             bool isMoving = characterInputVector.magnitude > 0.05f;
@@ -54,6 +60,12 @@ namespace Kiadorn.Entities.Locomotion
         public virtual void ProcessTargetDestination(Vector3 targetPosition)
         {
             //TO-DO
+        }
+
+        public virtual void Stop()
+        {
+            targetVelocity = Vector3.zero;
+            currentSpeed = 0;
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Kiadorn.Entities.Locomotion
 
         public void ProcessDirectionVector(Vector2 direction)
         {
+            direction.Normalize();
+            m_agent.ResetPath();
             m_agent.Move(new Vector3(direction.x, 0, direction.y));
         }
 
@@ -21,6 +23,11 @@ namespace Kiadorn.Entities.Locomotion
         {
             m_agent.ResetPath();
             m_agent.SetDestination(targetPosition);
+        }
+
+        public void Stop()
+        {
+            m_agent.ResetPath();
         }
     }
 }

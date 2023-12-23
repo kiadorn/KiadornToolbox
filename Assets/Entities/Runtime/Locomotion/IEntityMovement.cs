@@ -11,5 +11,7 @@ namespace Kiadorn.Entities.Locomotion
         public void ProcessDirectionVector(Vector2 direction);
 
         public void ProcessTargetDestination(Vector3 targetPosition);
+
+        public void Stop();
     }
 }
