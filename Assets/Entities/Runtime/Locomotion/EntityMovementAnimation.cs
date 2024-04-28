@@ -19,6 +19,12 @@ namespace Kiadorn.Entities.Locomotion
         [SerializeField, RequireInterface(typeof(IEntityLookDirection))]
         private Object lookDirection;
         private IEntityLookDirection lookDirectionInterface => lookDirection as IEntityLookDirection;
+        
+        [SerializeField]
+        private float rotateThreshold;
+
+        [SerializeField]
+        private AvatarMask bodyMask;
 
         private float velocityZ;
         private float currentVelocityZ;
@@ -26,11 +32,28 @@ namespace Kiadorn.Entities.Locomotion
         private float currentVelocityX;
         private float velocity;
 
+        private Vector3 lastLookDirection;
+
         private void Update()
         {
             RotateModelTowardsLookDirection();
-
+            SetShuffleLeftRight();
             SetXandZVelocity();
+            //SetAvatarBodyMask();
+        }
+
+        private void SetAvatarBodyMask()
+        {
+            if (bodyMask == null)
+                return;
+
+            bool isMoving = movementInterface.Velocity.magnitude > 0.01f;
+
+            bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftLeg, !isMoving);
+            bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightLeg, !isMoving);
+            bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.Root, !isMoving);
+            bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftFootIK, !isMoving);
+            bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightFootIK, !isMoving);
         }
 
         private void SetXandZVelocity()
@@ -46,7 +69,8 @@ namespace Kiadorn.Entities.Locomotion
 
         private void SetVelocity()
         {
-            velocity = Mathf.Clamp01(Mathf.Abs(velocityX) + Mathf.Abs(velocityZ));
+            //velocity = Mathf.Clamp01(Mathf.Abs(velocityX) + Mathf.Abs(velocityZ));
+            velocity = movementInterface.Velocity.magnitude / movementInterface.MaxSpeed;
             animator.SetFloat(Constants.VelocityHash, velocity);
         }
 
@@ -76,7 +100,27 @@ namespace Kiadorn.Entities.Locomotion
 
         private void RotateModelTowardsLookDirection()
         {
+            //Vector3 direction = Vector3.Lerp(lastLookDirection, lookDirectionInterface.LookDirectionVector, Time.deltaTime);
+            //transform.LookAt(direction + transform.position);
             transform.LookAt(lookDirectionInterface.LookDirectionVector + transform.position);
+        }
+
+        private void SetShuffleLeftRight()
+        {
+            float newAngle = Vector3.SignedAngle(lastLookDirection, lookDirectionInterface.LookDirectionVector, Vector3.up);
+            int isRotatingRight = 0;
+
+            if (newAngle > rotateThreshold)
+            {
+                isRotatingRight = 1;
+            }
+            else if (newAngle < -rotateThreshold)
+            {
+                isRotatingRight = -1;
+            }
+
+            animator.SetInteger(Constants.RotateHash, isRotatingRight);
+            lastLookDirection = lookDirectionInterface.LookDirectionVector;
         }
     }
 }
