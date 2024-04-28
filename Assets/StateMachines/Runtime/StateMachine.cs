@@ -8,6 +8,8 @@ namespace Kiadorn.StateMachines
     {
         public State CurrentState { get; private set; }
 
+        public event Action<State> StateChanged;
+
         [SerializeField]
         protected State[] availableStates;
 
@@ -39,9 +41,49 @@ namespace Kiadorn.StateMachines
 
         public virtual void TransitionTo<T>()
         {
+            if (CurrentState.GetType() == typeof(T))
+            {
+                Debug.Log(string.Format("Already at state {0}", typeof(T).ToString()));
+                return;
+            }
+
             CurrentState.Exit();
             CurrentState = GetState<T>() as State;
             CurrentState.Enter();
+            StateChanged?.Invoke(CurrentState);
+        }
+
+        public virtual void TransitionTo(State state)
+        {
+            if (CurrentState.GetType() == state.GetType())
+            {
+                Debug.Log(string.Format("Already at state {0}", state.name));
+                return;
+            }
+
+            CurrentState.Exit();
+            CurrentState = state;
+            CurrentState.Enter();
+            StateChanged?.Invoke(CurrentState);
+        }
+
+        public int GetStateIndex(State state)
+        {
+            int stateIndex = -1;
+            for (int i = 0; i < availableStates.Length; i++)
+            {
+                if (availableStates[i].GetType() == state.GetType())
+                {
+                    return i;
+                }
+            }
+            return stateIndex;
+        }
+
+        public State GetState(int index)
+        {
+            stateDictionary.TryGetValue(availableStates[index].GetType(), out State state);
+            return state;
         }
 
         private void CreateStateCopies()
