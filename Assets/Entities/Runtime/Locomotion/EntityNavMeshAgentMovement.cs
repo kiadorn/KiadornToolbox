@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,6 +12,9 @@ namespace Kiadorn.Entities.Locomotion
 
         [SerializeField]
         protected NavMeshAgent m_agent;
+
+        protected Dictionary<string, float> movementModifiers = new Dictionary<string, float>();
+
 
         public void ProcessDirectionVector(Vector2 direction)
         {
@@ -28,6 +32,16 @@ namespace Kiadorn.Entities.Locomotion
         public void Stop()
         {
             m_agent.ResetPath();
+        }
+
+        public void AddMovementModifier(string modifierKey, float modifierValue)
+        {
+            movementModifiers.Add(modifierKey, modifierValue);
+        }
+
+        public void RemoveMovementModifier(string modifierKey)
+        {
+            movementModifiers.Remove(modifierKey);
         }
     }
 }
