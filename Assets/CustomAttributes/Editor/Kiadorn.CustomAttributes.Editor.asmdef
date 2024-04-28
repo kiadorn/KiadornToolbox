@@ -1,8 +1,8 @@
 {
-    "name": "Kiadorn.BehaviourTree.Editor",
-    "rootNamespace": "Kiadorn.BehaviourTree.Editor",
+    "name": "Kiadorn.CustomAttributes.Editor",
+    "rootNamespace": "Kiadorn.CustomAttributes",
     "references": [
-        "GUID:eebb001fed5452941818dde623be2d30"
+        "GUID:949c6377bfc31ba49a5ab84587605dde"
     ],
     "includePlatforms": [
         "Editor"

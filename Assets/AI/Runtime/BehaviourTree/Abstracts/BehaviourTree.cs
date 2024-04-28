@@ -25,21 +25,24 @@ namespace Kiadorn.BehaviourTree
         public Node CreateNode(System.Type type)
         {
             Node node = ScriptableObject.CreateInstance(type) as Node;
+#if UNITY_EDITOR
             node.name = type.Name;
             node.guid = GUID.Generate().ToString();
             nodes.Add(node);
 
             AssetDatabase.AddObjectToAsset(node, this);
             AssetDatabase.SaveAssets();
-
+#endif
             return node;
         }
 
         public void DeleteNode(Node node)
         {
+#if UNITY_EDITOR
             nodes.Remove(node);
             AssetDatabase.RemoveObjectFromAsset(node);
             AssetDatabase.SaveAssets();
+#endif
         }
 
 
