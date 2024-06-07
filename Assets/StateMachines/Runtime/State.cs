@@ -6,10 +6,12 @@ namespace Kiadorn.StateMachines
     {
         protected StateMachine owner;
 
-        public virtual void Initialize(StateMachine owner)
+        public virtual void InitializeAwake(StateMachine owner)
         {
             this.owner = owner;
         }
+
+        public virtual void InitializeStart(StateMachine owner) { }
 
         public virtual void Tick() { }
 

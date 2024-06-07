@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Kiadorn.StateMachines
@@ -22,6 +23,11 @@ namespace Kiadorn.StateMachines
             {
                 enabled = false;
             }
+        }
+
+        protected virtual void Start()
+        {
+            InitializeStart();
         }
 
         protected virtual void Update()
@@ -88,16 +94,17 @@ namespace Kiadorn.StateMachines
 
         private void CreateStateCopies()
         {
-            foreach (State state in availableStates)
+            for (int i = 0; i < availableStates.Length; i++)
             {
+                State state = availableStates[i];
                 if (state == null)
                 {
                     continue;
                 }
 
                 State instance = Instantiate(state);
-                instance.Initialize(this);
                 stateDictionary.Add(instance.GetType(), instance);
+                instance.InitializeAwake(this);
 
                 if (CurrentState != null)
                 {
@@ -105,6 +112,21 @@ namespace Kiadorn.StateMachines
                 }
                 CurrentState = instance;
                 CurrentState.Enter();
+            }
+        }
+
+        private void InitializeStart()
+        {
+            var stateList = stateDictionary.Values.ToArray();
+            for (int i = 0; i < stateList.Length; i++)
+            {
+                State state = stateList[i];
+                if (state == null)
+                {
+                    continue;
+                }
+
+                state.InitializeStart(this);
             }
         }
     }
