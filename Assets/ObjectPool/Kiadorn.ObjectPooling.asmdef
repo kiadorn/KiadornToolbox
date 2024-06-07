@@ -1,7 +1,9 @@
 {
     "name": "Kiadorn.ObjectPooling",
-    "rootNamespace": "",
-    "references": [],
+    "rootNamespace": "Kiadorn.ObjectPooling",
+    "references": [
+        "GUID:949c6377bfc31ba49a5ab84587605dde"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -3,47 +3,60 @@ using UnityEngine.Pool;
 
 namespace Kiadorn.ObjectPooling
 {
-    public class ObjectPool : MonoBehaviour
+    public class ObjectPool : MonoBehaviour, IObjectPoolHolder
     {
         public IObjectPool<IObjectPoolItem> Pool
         {
             get
             {
-                if (m_Pool == null)
+                if (pool == null)
                 {
-                    m_Pool = new ObjectPool<IObjectPoolItem>(CreatePooledItem, OnTakeFromPool, OnReturnedToPool, OnDestroyPoolObject, collectionChecks, 10, maxPoolSize);
+                    pool = new ObjectPool<IObjectPoolItem>(CreatePooledItem, OnTakeFromPool, OnReturnedToPool, OnDestroyPoolObject, collectionChecks, 10, maxPoolSize);
                 }
-                return m_Pool;
+                return pool;
             }
         }
 
-        protected IObjectPool<IObjectPoolItem> m_Pool;
+        protected IObjectPool<IObjectPoolItem> pool;
+
+        public GameObject Prefab { get => prefab; }
+        [SerializeField]
+        protected GameObject prefab;
+
+        public int MaxPoolSize => maxPoolSize;
+
+        protected int maxPoolSize = 10;
+        public int DefaultCapacity => defaultCapacity;
+        [SerializeField]
+        protected int defaultCapacity = 10;
 
         [SerializeField]
-        protected int maxPoolSize = 10;
+        public bool CollectionChecks => collectionChecks;
 
         [SerializeField]
         protected bool collectionChecks = true;
 
-        [SerializeField]
-        protected GameObject prefab;
+        public IObjectPoolItem Get()
+        {
+            return Pool.Get();
+        }
 
-        protected void OnDestroyPoolObject(IObjectPoolItem obj)
+        public void OnDestroyPoolObject(IObjectPoolItem obj)
         {
             obj.DestroyPoolObject();
         }
 
-        protected void OnReturnedToPool(IObjectPoolItem obj)
+        public void OnReturnedToPool(IObjectPoolItem obj)
         {
             obj.ReturnToPool();
         }
 
-        protected void OnTakeFromPool(IObjectPoolItem obj)
+        public void OnTakeFromPool(IObjectPoolItem obj)
         {
             obj.TakeFromPool();
         }
 
-        protected IObjectPoolItem CreatePooledItem()
+        public IObjectPoolItem CreatePooledItem()
         {
             GameObject instantiatedObject = Instantiate(prefab, transform);
             IObjectPoolItem poolItem = instantiatedObject.GetComponent<IObjectPoolItem>();
