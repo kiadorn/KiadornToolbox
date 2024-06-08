@@ -1,5 +1,8 @@
 {
   "devDependencies": {
-    "unity-changelog-creator": "^2.0.3"
+    "commit-and-tag-version": "^12.4.1"
+  },
+  "scripts": {
+    "release": "commit-and-tag-version"
   }
 }
