@@ -105,6 +105,7 @@ namespace Kiadorn.StateMachines
                 State instance = Instantiate(state);
                 stateDictionary.Add(instance.GetType(), instance);
                 instance.InitializeAwake(this);
+                availableStates[i] = instance;
 
                 if (CurrentState != null)
                 {

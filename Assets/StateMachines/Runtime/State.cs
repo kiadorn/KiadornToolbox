@@ -4,6 +4,8 @@ namespace Kiadorn.StateMachines
 {
     public abstract class State : CustomScriptableObject
     {
+        public StateMachine Owner { get { return owner; } }
+
         protected StateMachine owner;
 
         public virtual void InitializeAwake(StateMachine owner)
