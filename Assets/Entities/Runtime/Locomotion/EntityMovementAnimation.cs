@@ -14,12 +14,14 @@ namespace Kiadorn.Entities.Locomotion
 
         [SerializeField, RequireInterface(typeof(IEntityMovement))]
         private Object movement;
+
         private IEntityMovement movementInterface => movement as IEntityMovement;
 
         [SerializeField, RequireInterface(typeof(IEntityLookDirection))]
         private Object lookDirection;
+
         private IEntityLookDirection lookDirectionInterface => lookDirection as IEntityLookDirection;
-        
+
         [SerializeField]
         private float rotateThreshold;
 
@@ -34,20 +36,23 @@ namespace Kiadorn.Entities.Locomotion
 
         private Vector3 lastLookDirection;
 
+        private bool isMoving = false;
+        private bool wasMoving = true;
+
         private void Update()
         {
+            isMoving = movementInterface.Velocity.magnitude > 0.05f;
             RotateModelTowardsLookDirection();
             SetShuffleLeftRight();
             SetXandZVelocity();
             //SetAvatarBodyMask();
+            wasMoving = isMoving;
         }
 
         private void SetAvatarBodyMask()
         {
-            if (bodyMask == null)
+            if (bodyMask == null || wasMoving == isMoving)
                 return;
-
-            bool isMoving = movementInterface.Velocity.magnitude > 0.01f;
 
             bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.LeftLeg, !isMoving);
             bodyMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart.RightLeg, !isMoving);
@@ -59,66 +64,66 @@ namespace Kiadorn.Entities.Locomotion
         private void SetXandZVelocity()
         {
             float dotCompareMovementAndLookDirection = Vector3.Dot(movementInterface.Velocity.normalized, lookDirectionInterface.LookDirectionVector.normalized);
-            float animationAccelerationModifier = 1 / animationAcceleration;
 
-            SetZVelocity(dotCompareMovementAndLookDirection, animationAccelerationModifier);
-            SetXVelocity(dotCompareMovementAndLookDirection, animationAccelerationModifier);
+            SetZVelocity(dotCompareMovementAndLookDirection);
+            SetXVelocity(dotCompareMovementAndLookDirection);
 
             SetVelocity();
         }
 
         private void SetVelocity()
         {
-            //velocity = Mathf.Clamp01(Mathf.Abs(velocityX) + Mathf.Abs(velocityZ));
-            velocity = movementInterface.Velocity.magnitude / movementInterface.MaxSpeed;
+            float targetVelocity = isMoving ? movementInterface.Velocity.magnitude / movementInterface.MaxSpeed : 0;
+            velocity = Mathf.Lerp(velocity, targetVelocity, animationAcceleration * Time.deltaTime);
             animator.SetFloat(Constants.VelocityHash, velocity);
         }
 
-        private void SetXVelocity(float dotCompareMovementAndLookDirection, float animationAccelerationModifier)
+        private void SetXVelocity(float dotCompareMovementAndLookDirection)
         {
-            bool isMoving = movementInterface.Velocity.magnitude > 0.01f;
+            float targetVelocityX = 0;
 
             if (isMoving)
             {
-                float angle = Vector3.SignedAngle(movementInterface.Velocity, lookDirectionInterface.LookDirectionVector.normalized, Vector3.up);
+                float angle = Vector3.SignedAngle(movementInterface.Velocity, lookDirectionInterface.LookDirectionVector, Vector3.up);
                 bool leftOrRightDirection = angle > 0;
-                float targetVelocityX = (1 - Mathf.Abs(dotCompareMovementAndLookDirection)) * (leftOrRightDirection ? -1 : 1);
-                velocityX = Mathf.SmoothDamp(velocityX, targetVelocityX, ref currentVelocityX, animationAccelerationModifier);
+                targetVelocityX = (1 - Mathf.Abs(dotCompareMovementAndLookDirection)) * (leftOrRightDirection ? -1 : 1);
             }
-            else
-            {
-                velocityX = Mathf.SmoothDamp(velocityX, 0, ref currentVelocityX, animationAccelerationModifier);
-            }
+            velocityX = Mathf.Lerp(velocityX, targetVelocityX, animationAcceleration * Time.deltaTime);
             animator.SetFloat(Constants.VelocityXHash, velocityX);
         }
 
-        private void SetZVelocity(float dotCompareMovementAndLookDirection, float animationAccelerationModifier)
+        private void SetZVelocity(float dotCompareMovementAndLookDirection)
         {
-            velocityZ = Mathf.SmoothDamp(velocityZ, dotCompareMovementAndLookDirection, ref currentVelocityZ, animationAccelerationModifier);
+            float targetVelocityZ = 0;
+            if (isMoving)
+            {
+                targetVelocityZ = dotCompareMovementAndLookDirection;
+            }
+            velocityZ = Mathf.Lerp(velocityZ, targetVelocityZ, animationAcceleration * Time.deltaTime);
             animator.SetFloat(Constants.VelocityZHash, velocityZ);
         }
 
         private void RotateModelTowardsLookDirection()
         {
-            //Vector3 direction = Vector3.Lerp(lastLookDirection, lookDirectionInterface.LookDirectionVector, Time.deltaTime);
-            //transform.LookAt(direction + transform.position);
             transform.LookAt(lookDirectionInterface.LookDirectionVector + transform.position);
         }
 
         private void SetShuffleLeftRight()
         {
-            float newAngle = Vector3.SignedAngle(lastLookDirection, lookDirectionInterface.LookDirectionVector, Vector3.up);
             int isRotatingRight = 0;
-
-            if (newAngle > rotateThreshold)
+            if (!isMoving)
             {
-                isRotatingRight = 1;
-            }
-            else if (newAngle < -rotateThreshold)
-            {
-                isRotatingRight = -1;
-            }
+                float newAngle = Vector3.SignedAngle(lastLookDirection, lookDirectionInterface.LookDirectionVector, Vector3.up);
 
+                if (newAngle > rotateThreshold)
+                {
+                    isRotatingRight = 1;
+                }
+                else if (newAngle < -rotateThreshold)
+                {
+                    isRotatingRight = -1;
+                }
+            }
             animator.SetInteger(Constants.RotateHash, isRotatingRight);
             lastLookDirection = lookDirectionInterface.LookDirectionVector;
         }
