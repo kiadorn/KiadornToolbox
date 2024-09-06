@@ -6,32 +6,31 @@ namespace Kiadorn.Entities.Locomotion
 {
     public class EntityNavMeshAgentMovement : MonoBehaviour, IEntityMovement
     {
-        public Vector3 Velocity => m_agent.velocity;
+        public Vector3 Velocity => agent.velocity;
 
-        public float MaxSpeed => m_agent.speed;
+        public float MaxSpeed => agent.speed;
 
         [SerializeField]
-        protected NavMeshAgent m_agent;
+        protected NavMeshAgent agent;
 
         protected Dictionary<string, float> movementModifiers = new Dictionary<string, float>();
 
-
-        public void ProcessDirectionVector(Vector2 direction)
+        public void ProcessMovementDirection(Vector2 direction)
         {
             direction.Normalize();
-            m_agent.ResetPath();
-            m_agent.Move(new Vector3(direction.x, 0, direction.y));
+            agent.ResetPath();
+            agent.Move(new Vector3(direction.x, 0, direction.y));
         }
 
         public void ProcessTargetDestination(Vector3 targetPosition)
         {
-            m_agent.ResetPath();
-            m_agent.SetDestination(targetPosition);
+            agent.ResetPath();
+            agent.SetDestination(targetPosition);
         }
 
         public void Stop()
         {
-            m_agent.ResetPath();
+            agent.isStopped = true;
         }
 
         public void AddMovementModifier(string modifierKey, float modifierValue)

@@ -8,7 +8,7 @@ namespace Kiadorn.Entities.Locomotion
 
         public float MaxSpeed { get; }
 
-        public void ProcessDirectionVector(Vector2 direction);
+        public void ProcessMovementDirection(Vector2 direction);
 
         public void ProcessTargetDestination(Vector3 targetPosition);
 

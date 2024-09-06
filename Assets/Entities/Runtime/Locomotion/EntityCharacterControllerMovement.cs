@@ -5,7 +5,7 @@ namespace Kiadorn.Entities.Locomotion
 {
     public class EntityCharacterControllerMovement : MonoBehaviour, IEntityMovement
     {
-        public Vector3 Velocity => character.velocity;
+        public Vector3 Velocity => targetVelocity;
 
         public float MaxSpeed => maxSpeed;
 
@@ -24,7 +24,7 @@ namespace Kiadorn.Entities.Locomotion
         protected Vector3 characterInput;
         protected Vector3 targetVelocity;
 
-        protected float currentSpeed;
+        protected float currentBaseSpeed;
 
         protected bool inControl = true;
 
@@ -37,10 +37,13 @@ namespace Kiadorn.Entities.Locomotion
 
         protected virtual void FixedUpdate()
         {
-            character.Move(targetVelocity);
+            if (inControl && targetVelocity != Vector3.zero)
+            {
+                character.Move(targetVelocity);
+            }
         }
 
-        public virtual void ProcessDirectionVector(Vector2 movementVector)
+        public virtual void ProcessMovementDirection(Vector2 movementVector)
         {
             if (!inControl)
             {
@@ -62,11 +65,11 @@ namespace Kiadorn.Entities.Locomotion
 
         private void Accelerate()
         {
-            currentSpeed += Time.deltaTime * accelerateRate;
-            //currentSpeed = Mathf.Clamp(currentSpeed, 0, maxSpeed);
-            float modifiedCurrentSpeed = currentSpeed * TotalModifiers();
-            targetVelocity += characterInput * modifiedCurrentSpeed;
-            targetVelocity = Vector3.ClampMagnitude(characterInput * modifiedCurrentSpeed, maxSpeed);
+            currentBaseSpeed += Time.deltaTime * accelerateRate;
+            currentBaseSpeed = Mathf.Clamp(currentBaseSpeed, 0, maxSpeed);
+            float modifiedCurrentSpeed = currentBaseSpeed * TotalModifiers();
+            targetVelocity = characterInput * modifiedCurrentSpeed;
+            targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
         }
 
         private float TotalModifiers()
@@ -86,7 +89,7 @@ namespace Kiadorn.Entities.Locomotion
         private void Deaccelerate()
         {
             targetVelocity *= deaccelerateRate;
-            currentSpeed = 0;
+            currentBaseSpeed = 0;
         }
 
         public virtual void ProcessTargetDestination(Vector3 targetPosition)
@@ -96,8 +99,11 @@ namespace Kiadorn.Entities.Locomotion
 
         public virtual void Stop()
         {
-            targetVelocity = Vector3.zero;
-            currentSpeed = 0;
+            if (targetVelocity != Vector3.zero)
+            {
+                targetVelocity = Vector3.zero;
+                currentBaseSpeed = 0;
+            }
         }
 
         public void AddMovementModifier(string modifierKey, float modifierValue)
@@ -107,7 +113,7 @@ namespace Kiadorn.Entities.Locomotion
 
         public void RemoveMovementModifier(string modifierKey)
         {
-             movementModifiers.Remove(modifierKey);
+            movementModifiers.Remove(modifierKey);
         }
     }
 }

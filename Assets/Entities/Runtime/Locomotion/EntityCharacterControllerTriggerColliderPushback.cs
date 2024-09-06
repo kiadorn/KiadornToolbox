@@ -17,7 +17,7 @@ namespace Kiadorn.Entities.Locomotion
 
         private void Pushback(Collider other)
         {
-            movement.ProcessDirectionVector(-movement.Velocity);
+            movement.ProcessMovementDirection(-movement.Velocity);
         }
     }
 }
