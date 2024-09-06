@@ -7,6 +7,7 @@ namespace Kiadorn.Utilities
         public const string BaseMenuName = "Kiadorn/";
 
         #region AnimatorVariables
+
         public const string VelocityX = "VelocityX";
         public const string VelocityZ = "VelocityZ";
         public const string Velocity = "Velocity";
@@ -16,6 +17,7 @@ namespace Kiadorn.Utilities
         public static int VelocityZHash = Animator.StringToHash(VelocityZ);
         public static int VelocityHash = Animator.StringToHash(Velocity);
         public static int RotateHash = Animator.StringToHash(RotateRight);
-        #endregion
+
+        #endregion AnimatorVariables
     }
 }
