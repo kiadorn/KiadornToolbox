@@ -35,6 +35,14 @@ namespace Kiadorn.StateMachines
             CurrentState.Tick();
         }
 
+        protected void OnDestroy()
+        {
+            for (int i = 0; i < availableStates.Length; i++)
+            {
+                Destroy(availableStates[i]);
+            }
+        }
+
         public virtual T GetState<T>()
         {
             Type type = typeof(T);
