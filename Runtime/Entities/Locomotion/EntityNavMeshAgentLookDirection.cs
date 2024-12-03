@@ -11,10 +11,13 @@ namespace Kiadorn.Entities.Locomotion
         [SerializeField]
         private NavMeshAgent agent;
 
-        [SerializeField]
-        private float rotationSpeed = 20;
-
         private Vector3 targetDirection;
+
+        private void Update()
+        {
+            LookDirectionVector = agent.transform.forward;
+            RotateTowardsTarget();
+        }
 
         public void ProcessLookAtPosition(Vector3 targetPosition)
         {
@@ -22,16 +25,14 @@ namespace Kiadorn.Entities.Locomotion
             IsLookDirectionManual = true;
         }
 
-        private void Update()
+        private void RotateTowardsTarget()
         {
-            float finalRotationSpeed = rotationSpeed;
             if (!IsLookDirectionManual)
             {
-                targetDirection = transform.forward;
-                finalRotationSpeed *= 5f;
+                targetDirection = agent.velocity.normalized != Vector3.zero ? agent.velocity.normalized : agent.transform.forward.normalized;
             }
 
-            LookDirectionVector = Vector3.RotateTowards(LookDirectionVector, targetDirection, finalRotationSpeed * Time.deltaTime, finalRotationSpeed * Time.deltaTime);
+            LookDirectionVector = targetDirection;
         }
     }
 }
