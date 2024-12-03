@@ -29,9 +29,7 @@ namespace Kiadorn.Entities.Locomotion
         private AvatarMask bodyMask;
 
         private float velocityZ;
-        private float currentVelocityZ;
         private float velocityX;
-        private float currentVelocityX;
         private float velocity;
 
         private Vector3 lastLookDirection;
@@ -43,7 +41,7 @@ namespace Kiadorn.Entities.Locomotion
         {
             isMoving = movementInterface.Velocity.magnitude > 0.05f;
             RotateModelTowardsLookDirection();
-            SetShuffleLeftRight();
+            //SetShuffleLeftRight();
             SetXandZVelocity();
             //SetAvatarBodyMask();
             wasMoving = isMoving;
