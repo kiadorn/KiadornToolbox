@@ -27,7 +27,7 @@ namespace Kiadorn.ScriptableEvents
             }
         }
 
-        public void OnEventRaised()
+        public void OnEventRaised(ScriptableEvent scriptableEvent)
         {
             response?.Invoke();
         }

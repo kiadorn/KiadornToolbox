@@ -2,6 +2,6 @@ namespace Kiadorn.ScriptableEvents
 {
     public interface IScriptableEventListener
     {
-        void OnEventRaised();
+        void OnEventRaised(ScriptableEvent eventRaised);
     }
 }

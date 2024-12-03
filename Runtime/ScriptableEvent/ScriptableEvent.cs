@@ -12,7 +12,7 @@ namespace Kiadorn.ScriptableEvents
         {
             for (int i = 0; i < listeners.Count; i++)
             {
-                listeners[i].OnEventRaised();
+                listeners[i].OnEventRaised(this);
             }
         }
 
