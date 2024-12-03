@@ -21,7 +21,6 @@ namespace Kiadorn.Entities.Locomotion
         [SerializeField]
         protected CharacterController character;
 
-        protected Vector3 characterInput;
         protected Vector3 targetVelocity;
 
         protected float currentBaseSpeed;
@@ -39,7 +38,7 @@ namespace Kiadorn.Entities.Locomotion
         {
             if (inControl && targetVelocity != Vector3.zero)
             {
-                character.Move(targetVelocity);
+                character.Move(targetVelocity * Time.fixedDeltaTime);
             }
         }
 
@@ -50,12 +49,12 @@ namespace Kiadorn.Entities.Locomotion
                 return;
             }
 
-            characterInput = new Vector3(movementVector.x, 0, movementVector.y);
+            Vector3 characterInput = new Vector3(movementVector.x, 0, movementVector.y);
             bool isMoving = characterInput.magnitude > 0.05f;
 
             if (isMoving)
             {
-                Accelerate();
+                Accelerate(characterInput);
             }
             else
             {
@@ -63,36 +62,27 @@ namespace Kiadorn.Entities.Locomotion
             }
         }
 
-        private void Accelerate()
+        public virtual void ProcessTargetDestination(Vector3 targetPosition)
         {
-            currentBaseSpeed += Time.deltaTime * accelerateRate;
-            currentBaseSpeed = Mathf.Clamp(currentBaseSpeed, 0, maxSpeed);
-            float modifiedCurrentSpeed = currentBaseSpeed * TotalModifiers();
-            targetVelocity = characterInput * modifiedCurrentSpeed;
-            targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
-        }
-
-        private float TotalModifiers()
-        {
-            float totalModifiers = 1;
-            if (movementModifiers.Count > 0)
+            if (!inControl)
             {
-                foreach (KeyValuePair<string, float> modifier in movementModifiers)
-                {
-                    totalModifiers += modifier.Value;
-                }
+                return;
             }
 
-            return totalModifiers;
+            Vector3 directionToTarget = (targetPosition - transform.position).normalized;
+            Vector3 characterInput = new Vector3(directionToTarget.x, 0, directionToTarget.z);
+
+            if (Vector3.Distance(transform.position, targetPosition) > 0.1f)
+            {
+                Accelerate(characterInput);
+            }
+            else
+            {
+                Deaccelerate();
+            }
         }
 
-        private void Deaccelerate()
-        {
-            targetVelocity *= deaccelerateRate;
-            currentBaseSpeed = 0;
-        }
-
-        public virtual void ProcessTargetDestination(Vector3 targetPosition)
+        public virtual void ProcessRotateTowards(Vector3 targetPosition)
         {
             //TO-DO
         }
@@ -114,6 +104,51 @@ namespace Kiadorn.Entities.Locomotion
         public void RemoveMovementModifier(string modifierKey)
         {
             movementModifiers.Remove(modifierKey);
+        }
+
+        private void Accelerate(Vector3 characterInput)
+        {
+            IncreaseBaseSpeed();
+            float modifiedSpeed = currentBaseSpeed * TotalModifiers();
+            UpdateTargetVelocity(modifiedSpeed, characterInput);
+        }
+
+        private void IncreaseBaseSpeed()
+        {
+            currentBaseSpeed += Time.deltaTime * accelerateRate;
+            currentBaseSpeed = Mathf.Clamp(currentBaseSpeed, 0, maxSpeed);
+        }
+
+        private float TotalModifiers()
+        {
+            float totalModifiers = 1;
+            if (movementModifiers.Count > 0)
+            {
+                foreach (KeyValuePair<string, float> modifier in movementModifiers)
+                {
+                    totalModifiers += modifier.Value;
+                }
+            }
+
+            return totalModifiers;
+        }
+
+        private void DecreaseBaseSpeed()
+        {
+            currentBaseSpeed -= Time.deltaTime * deaccelerateRate;
+            currentBaseSpeed = Mathf.Clamp(currentBaseSpeed, 0, maxSpeed);
+        }
+
+        private void UpdateTargetVelocity(float speed, Vector3 characterInput)
+        {
+            targetVelocity = characterInput * speed;
+            targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
+        }
+
+        private void Deaccelerate()
+        {
+            DecreaseBaseSpeed();
+            UpdateTargetVelocity(currentBaseSpeed, targetVelocity);
         }
     }
 }

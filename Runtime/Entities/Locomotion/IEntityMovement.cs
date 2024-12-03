@@ -12,6 +12,8 @@ namespace Kiadorn.Entities.Locomotion
 
         public void ProcessTargetDestination(Vector3 targetPosition);
 
+        public void ProcessRotateTowards(Vector3 targetPosition);
+
         public void Stop();
 
         public void AddMovementModifier(string modifierKey, float modifierValue);
