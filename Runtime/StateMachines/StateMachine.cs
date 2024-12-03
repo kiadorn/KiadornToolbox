@@ -43,26 +43,39 @@ namespace Kiadorn.StateMachines
             }
         }
 
-        public virtual T GetState<T>()
+        public virtual T GetState<T>() where T : State
         {
-            Type type = typeof(T);
-            if (!stateDictionary.ContainsKey(type))
+            Type requestedType = typeof(T);
+
+            if (stateDictionary.TryGetValue(requestedType, out State state))
             {
-                throw new NullReferenceException("No state of type: " + type + " found");
+                return (T)state;
             }
-            return (T)Convert.ChangeType(stateDictionary[type], type);
+
+            foreach (var entry in stateDictionary.Values)
+            {
+                if (requestedType.IsAssignableFrom(entry.GetType()))
+                {
+                    return (T)entry;
+                }
+            }
+
+            throw new NullReferenceException("No state of type: " + requestedType?.ToString() + " found");
         }
 
-        public virtual void TransitionTo<T>()
+        public virtual void TransitionTo<T>() where T : State
         {
-            if (CurrentState.GetType() == typeof(T))
+            Type currentStateType = CurrentState.GetType();
+            Type newStateType = typeof(T);
+
+            if (currentStateType == newStateType)
             {
-                Debug.Log(string.Format("Already at state {0}", typeof(T).ToString()));
+                Debug.Log($"Already at state {newStateType}");
                 return;
             }
 
             CurrentState.Exit();
-            CurrentState = GetState<T>() as State;
+            CurrentState = GetState<T>();
             CurrentState.Enter();
             StateChanged?.Invoke(CurrentState);
         }
@@ -83,7 +96,6 @@ namespace Kiadorn.StateMachines
 
         public int GetStateIndex(State state)
         {
-            int stateIndex = -1;
             for (int i = 0; i < availableStates.Length; i++)
             {
                 if (availableStates[i].GetType() == state.GetType())
@@ -91,13 +103,16 @@ namespace Kiadorn.StateMachines
                     return i;
                 }
             }
-            return stateIndex;
+            return -1;
         }
 
         public State GetState(int index)
         {
-            stateDictionary.TryGetValue(availableStates[index].GetType(), out State state);
-            return state;
+            if (index >= 0 && index < availableStates.Length)
+            {
+                return availableStates[index];
+            }
+            return null;
         }
 
         private void CreateStateCopies()
