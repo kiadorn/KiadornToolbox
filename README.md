@@ -15,6 +15,9 @@ Components relevant for "actors", like locomotion and animations.
 ### Custom Attributes
 E.g. RequireInterface attribute to validate Behaviour references with an implemented interface.
 
+### Animation Events
+Animation State Machine Behaviours used as alternative Animation Events.
+
 ### Behaviour Tree (WIP)
 Not fully implemented.
 
