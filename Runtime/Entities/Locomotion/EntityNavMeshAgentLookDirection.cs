@@ -5,7 +5,8 @@ namespace Kiadorn.Entities.Locomotion
 {
     public class EntityNavMeshAgentLookDirection : MonoBehaviour, IEntityLookDirection
     {
-        public Vector3 LookDirectionVector { get; set; }
+        public Vector3 LookDirection { get; set; }
+        public Vector3 LookDirectionPosition { get; set; }
         public bool IsLookDirectionManual { get; set; }
 
         [SerializeField]
@@ -15,7 +16,8 @@ namespace Kiadorn.Entities.Locomotion
 
         private void Update()
         {
-            LookDirectionVector = agent.transform.forward;
+            LookDirection = agent.transform.forward;
+            LookDirectionPosition = agent.pathEndPosition;
             RotateTowardsTarget();
         }
 
@@ -32,7 +34,7 @@ namespace Kiadorn.Entities.Locomotion
                 targetDirection = agent.velocity.normalized != Vector3.zero ? agent.velocity.normalized : agent.transform.forward.normalized;
             }
 
-            LookDirectionVector = targetDirection;
+            LookDirection = targetDirection;
         }
     }
 }
