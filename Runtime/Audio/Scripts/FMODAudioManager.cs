@@ -40,7 +40,7 @@ namespace Kiadorn.Audio
 
                 if (playbackState == PLAYBACK_STATE.PLAYING)
                 {
-                    soundEvent.stop(STOP_MODE.ALLOWFADEOUT);
+                    soundEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 }
 
                 soundEvent.release();
