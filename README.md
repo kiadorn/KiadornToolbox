@@ -21,6 +21,9 @@ Animation State Machine Behaviours used as alternative Animation Events.
 ### Audio Manager
 Simple global audio manager with FMOD support.
 
+### Save System
+Simple save system with Unity Serialization or Json Utility support.
+
 ### Behaviour Tree (WIP)
 Not fully implemented.
 
