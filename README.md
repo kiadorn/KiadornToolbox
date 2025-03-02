@@ -18,6 +18,9 @@ E.g. RequireInterface attribute to validate Behaviour references with an impleme
 ### Animation Events
 Animation State Machine Behaviours used as alternative Animation Events.
 
+### Animation Rigging Utilities
+For controlling Unity Rigging constraints through scripting.
+
 ### Audio Manager
 Simple global audio manager with FMOD support.
 
